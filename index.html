@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>karty-rysunkowe.pl - Sklep</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, rgb(10, 150, 10) 0%, rgb(15, 190, 15) 100%);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    font-size: x-large;
+    z-index: 1;
+}
+
+/* TOP BAR */
+.topbar {
+    position: absolute;
+    width: 100%;
+    background: rgb(51, 51, 51);
+    height: 5%;
+    top: 0;
+    left: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* MONEY */
+#moneyText {
+    position: absolute;
+    right: 20px;
+    top: 8px;
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.2rem;
+    z-index: 2;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* GŁÓWNY UKŁAD STRONY (LAYOUT) */
+.main-wrapper {
+    margin-top: 80px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 30px;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* SIATKA PRODUKTÓW */
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* NOWOCZESNA KARTA PRODUKTU */
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+}
+
+.card h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 1.35rem;
+    text-transform: capitalize;
+}
+
+.card .price-tag {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #27ae60;
+    margin: 15px 0;
+}
+
+.card .pack-info {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+/* PRZYCISKI */
+button {
+    padding: 12px 18px;
+    border: none;
+    background: #2c3e50;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background 0.2s, transform 0.1s;
+}
+
+button:hover {
+    background: #34495e;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background: #ecf0f1;
+    color: #2c3e50;
+    margin-top: 8px;
+}
+
+.btn-secondary:hover {
+    background: #bdc3c7;
+}
+
+/* KOSZYK */
+#cart {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    height: fit-content;
+    position: sticky;
+    top: 80px;
+}
+
+#cart h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+    color: #2c3e50;
+}
+
+#cartItems {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 0.95rem;
+}
+
+.cart-item .remove-btn {
+    background: none;
+    color: #e74c3c;
+    padding: 2px 5px;
+    font-size: 0.8rem;
+}
+
+.cart-item .remove-btn:hover {
+    background: #fde8e7;
+}
+
+.cart-total {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: right;
+    margin: 15px 0;
+    color: #2c3e50;
+}
+
+.btn-buy {
+    width: 100%;
+    background: #27ae60;
+    font-size: 1.1rem;
+    padding: 14px;
+}
+
+.btn-buy:hover {
+    background: #219653;
+}
+
+/* MODALE / FULLSCREEN */
+.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+    color: white;
+    display: none;
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* OKIENKO MODALA */
+.modal-content {
+    background: white;
+    color: #333;
+    padding: 30px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+/* OPINIE O KARTACH */
+.review-section {
+    margin-top: 20px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.review {
+    background: #f8f9fa;
+    color: #333;
+    padding: 12px;
+    margin: 10px 0;
+    border-left: 4px solid #27ae60;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.review-author {
+    display: block;
+    text-align: right;
+    font-weight: bold;
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.stars {
+    color: #f1c40f;
+    margin-bottom: 4px;
+}
+
+/* REALISTYCZNA FAKTURA / POTWIERDZENIE PŁATNOŚCI */
+.receipt-box {
+    background: #ffffff;
+    color: #000000;
+    padding: 35px;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 450px;
+    font-family: 'Courier New', Courier, monospace;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+    border-top: 8px solid #27ae60;
+}
+
+.receipt-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.receipt-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.receipt-meta {
+    font-size: 0.8rem;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.receipt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.receipt-table th {
+    border-bottom: 1px solid #000;
+    text-align: left;
+    padding-bottom: 5px;
+}
+
+.receipt-table td {
+    padding: 6px 0;
+}
+
+.receipt-summary {
+    border-top: 1px dashed #000;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.receipt-row-flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.receipt-barcode {
+    text-align: center;
+    margin: 20px 0 10px 0;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #000 2px, transparent 2px, #000 4px, transparent 4px, #000 7px, transparent 7px);
+    height: 40px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar"></div>
+
+<a style="position: absolute; left: 5%; top: 8px;" href="tutorial.html">wszystkie karty</a>
+<a style="position: absolute; left: 20%; top: 8px;" href="rynek.html">rynek</a>
+
+<div id="moneyText">10000 zł</div>
+
+<div class="main-wrapper">
+    
+    <div class="shop-grid" id="shopGrid"></div>
+
+    <div id="cart">
+        <h3>Twój Koszyk</h3>
+        <div id="cartItems"></div>
+        <div class="cart-total">Razem: <span id="cartTotalText">0</span> zł</div>
+        <button class="btn-buy" onclick="buyCart()">SFINALIZUJ ZAKUP (KUP)</button>
+    </div>
+</div>
+
+<div id="moreScreen" class="fullscreen" onclick="closeMore()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2 id="modalTitle">Nazwa Paczki</h2>
+        <p id="modalDesc">Opis paczki</p>
+        
+        <h3>Opinie społeczności:</h3>
+        <div class="review-section" id="modalReviews"></div>
+
+        <button class="btn-secondary" style="width:100%; margin-top:20px;" onclick="closeMore()">Zamknij podgląd</button>
+    </div>
+</div>
+
+<div id="receiptScreen" class="fullscreen">
+    <div class="receipt-box">
+        <div class="receipt-header">
+            <h2>KARTY-RYSUNKOWE S.A.</h2>
+            <small>POTWIERDZENIE TRANSAKCJI CYFROWEJ</small>
+        </div>
+        
+        <div class="receipt-meta">
+            <div class="receipt-row-flex"><span>ID DOKUMENTU:</span> <span id="recInvoiceNo">#INV-948204</span></div>
+            <div class="receipt-row-flex"><span>DATA ZAKUPU:</span> <span id="recDate">2026-05-23 13:50</span></div>
+            <div class="receipt-row-flex"><span>METODA:</span> <span>KartyMoney Saldo v2</span></div>
+            <div class="receipt-row-flex"><span>STATUS:</span> <span style="font-weight: bold; color: green;">OPŁACONO [✔]</span></div>
+        </div>
+
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th>Nazwa pakietu</th>
+                    <th style="text-align: center;">Ilość</th>
+                    <th style="text-align: right;">Cena</th>
+                </tr>
+            </thead>
+            <tbody id="receiptTableBody">
+                </tbody>
+        </table>
+
+        <div class="receipt-summary">
+            <div class="receipt-row-flex" style="font-size: 0.8rem;"><span>Wartość netto:</span> <span id="recNetto">0.00 zł</span></div>
+            <div class="receipt-row-flex" style="font-size: 0.8rem;"><span>Podatek VAT (23%):</span> <span id="recVat">0.00 zł</span></div>
+            <div class="receipt-row-flex" style="font-size: 1.2rem; font-weight: bold; margin-top: 5px;">
+                <span>SUMA BRUTTO:</span> <span id="recTotal">0.00 zł</span>
+            </div>
+        </div>
+
+        <div class="receipt-barcode">|||| | ||||| | || |||| | ||| | |||</div>
+        <p style="text-align: center; font-size: 0.7rem; margin: 0;">Dziękujemy za zakupy w naszym uniwersum!</p>
+        
+        <button class="btn-secondary" style="width:100%; margin-top:25px;" onclick="closeReceipt()">Powrót do sklepu</button>
+    </div>
+</div>
+
+<script>
+// BAZA DANYCH PACZEK KART - TUTAJ MOŻESZ W PROSTY SPOSÓB DOPISYWAĆ KOLEJNE PACZKI!
+const cardPacks = [
+    {
+        id: "pack_ultimate",
+        name: "Draw Card Pack Ultimate",
+        price: 3000,
+        cardsCount: 1,
+        description: "paczka od erixis z motywem prostych rysunków, zawiera jedną kartę",
+        reviews: [ 
+            { author: "mateusz.p", text: "Karty dotarły w idealnym stanie. Legendarny drop przyspieszył bicie serca.", stars: 5 },
+            { author: "wojciech.g", text: "Grafiki na kartach rzadkich to mistrzostwo świata", stars: 5 },
+            { author: "konrad.m", text: "Wizualnie cudo", stars: 5 },
+            { author: "norbert.s", text: "Super jakość", stars: 5 },
+            { author: "patryk.b", text: "Ideale", stars: 5 },
+            { author: "rafal.k", text: "Szybkie tempo gry, brak przestojów i genialna społeczność graczy.", stars: 5 },
+
+            // 4 GWIAZDKI
+            { author: "damian.l", text: "Świetna zabawa, chociaż budowanie konkurencyjnej talii wymaga dokupienia kilku boosterów.", stars: 4 },
+            { author: "daniel.r", text: "Bardzo ładne matowe wykończenie rewersów. Karty nie ślizgają się w dłoniach.", stars: 4 },
+            { author: "arkadiusz.d", text: "", stars: 4 },
+            { author: "radoslaw.n", text: "Solidne cztery gwiazdki.", stars: 4 },
+            { author: "emil.t", text: "Proporcja ceny do jakości jest na dobrym poziomie. Na pewno kupię kolejny zestaw.", stars: 4 },
+            { author: "cezary.s", text: "polecam.", stars: 4 },
+            { author: "igor.m", text: "Efekty holograficzne robią wrażenie. Szkoda, że mało mi leciało.", stars: 4 },
+
+        ]
+    },
+    {
+        id: "pack_ultimate_double",
+        name: "Draw Card Pack Ultimate double",
+        price: 5500,
+        cardsCount: 2,
+        description: "paczka od erixis z motywem prostych rysunków, zawiera dwie karty",
+        reviews:[
+            { author: "janek.k", text: "Świetny drop w boosterach, a same ilustracje na kartach to czysta poezja!", stars: 5 },
+            { author: "marek.l", text: "Rewelacyjna jakość wykonania. Karty ze strukturą wyglądają niesamowicie w klaszerze.", stars: 5 },
+            { author: "tomek.w", text: "Budowanie talii daje mnóstwo frajdy.", stars: 5 },
+            { author: "lukasz.m", text: "Karty są grube i solidne .", stars: 5 },
+
+            // 4 GWIAZDKI
+            { author: "marcin.b", text: " choć grafiki na niektórych kartach mogłyby być lepsze.", stars: 4 },
+            { author: "kamil.g", text: "Bardzo udany set. Jedyny minus to fakt, że niektóre rzadkie karty trudno trafić.", stars: 4 },
+            { author: "michal.p", text: "", stars: 4 },
+            { author: "krzysztof.r", text: "", stars: 4 },
+            { author: "pawel.z", text: "krawędzie w kilku sztukach były troche wyszczerbione.", stars: 4 },
+        ]
+    },
+    {
+        id: "pack_ultimate_five",
+        name: "(NOWOŚĆ!) Draw Card Pack Ultimate five",
+        price: 13500,
+        cardsCount: 5,
+        description: "paczka od erixis z motywem prostych rysunków, zawiera pięć kart",
+        reviews:[
+            { author: "tadek.k", text: "spoko", stars: 5 },
+            { author: "renek.l", text: "Rewelacyjna jakość wykonania", stars: 5 },
+            { author: "janek.w", text: "Budowanie talii daje mnóstwo frajdy.", stars: 5 },
+            { author: "gienek.m", text: "Karty są grube i solidne .", stars: 5 },
+
+            // 4 GWIAZDKI
+            { author: "marysia.b", text: " choć grafiki na niektórych kartach mogłyby być lepsze.", stars: 4 },
+            { author: "darek.g", text: "Bardzo udany set. Jedyny minus to fakt, że niektóre rzadkie karty trudno trafić.", stars: 4 },
+            { author: "sebastian.p", text: "", stars: 4 },
+            { author: "krzysztof.r", text: "", stars: 4 },
+            { author: "gienek.z", text: "Karty prezentują się świetnie, ale krawędzie w kilku sztukach były minimalnie wyszczerbione.", stars: 4 },
+        ]
+    }
+];
+
+let money = 10000;
+let cartymoney = JSON.parse(localStorage.getItem("cartymoney")) || money;
+let cart = [];
+
+/* RENDEROWANIE PACZEK NA STRONIE */
+function renderShop() {
+    const grid = document.getElementById("shopGrid");
+    grid.innerHTML = "";
+
+    cardPacks.forEach((pack, index) => {
+        grid.innerHTML += `
+            <div class="card">
+                <div>
+                    <h3>${pack.name}</h3>
+                    <div class="pack-info">Zawartość: ${pack.cardsCount} karty</div>
+                    <p style="font-size:0.9rem; color:#555;">${pack.description.substring(0, 75)}...</p>
+                </div>
+                <div>
+                    <div class="price-tag">${pack.price} zł</div>
+                    <button style="width: 100%;" onclick="addToCart('${pack.id}')">Dodaj do koszyka</button>
+                    <button class="btn-secondary" style="width: 100%;" onclick="openMore(${index})">Więcej informacji</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+/* KOSZYK LOGIKA i UI */
+function updateCartUI() {
+    const div = document.getElementById("cartItems");
+    const totalText = document.getElementById("cartTotalText");
+    div.innerHTML = "";
+
+    if (cart.length === 0) {
+        div.innerHTML = `<p style="color:#aaa; text-align:center; padding: 20px 0;">Koszyk jest pusty</p>`;
+        totalText.innerText = "0";
+        return;
+    }
+
+    // Grupowanie przedmiotów w koszyku żeby ładnie wyglądało
+    const itemsCount = {};
+    cart.forEach(item => {
+        itemsCount[item.name] = (itemsCount[item.name] || 0) + 1;
+    });
+
+    let total = 0;
+    cart.forEach(item => total += item.price);
+
+    // Wyświetlanie zgrupowanych elementów
+    const uniqueItems = [...new Set(cart.map(item => item.name))];
+    uniqueItems.forEach(name => {
+        const itemSample = cart.find(item => item.name === name);
+        const count = itemsCount[name];
+        div.innerHTML += `
+            <div class="cart-item">
+                <div>
+                    <strong>${name}</strong> <span style="color:#7f8c8d">x${count}</span>
+                    <div style="font-size:0.8rem; color:#27ae60;">${itemSample.price * count} zł</div>
+                </div>
+                <button class="remove-btn" onclick="removeFromCart('${itemSample.id}')">Usuń</button>
+            </div>
+        `;
+    });
+
+    totalText.innerText = total;
+}
+
+function addToCart(packId) {
+    const pack = cardPacks.find(p => p.id === packId);
+    if (pack) {
+        cart.push({ ...pack });
+        updateCartUI();
+    }
+}
+
+function removeFromCart(packId) {
+    const index = cart.findIndex(item => item.id === packId);
+    if (index !== -1) {
+        cart.splice(index, 1);
+        updateCartUI();
+    }
+}
+
+function updateMoney() {
+    document.getElementById("moneyText").innerText = cartymoney + " zł";
+}
+
+function save() {
+    localStorage.setItem("cartymoney", JSON.stringify(cartymoney));
+}
+
+/* REALIZACJA ZAKUPU (KUPNO) */
+function buyCart() {
+    if (cart.length === 0) {
+        alert("🛒 Twój koszyk jest pusty! Dodaj najpierw pakiety kart.");
+        return;
+    }
+
+    let total = 0;
+    cart.forEach(item => total += item.price);
+
+    if (cartymoney < total) {
+        alert("❌ Transakcja odrzucona: Brak wystarczających środków na koncie KartyMoney!");
+        return;
+    }
+
+    cartymoney -= total;
+    save();
+    updateMoney();
+
+    showReceipt(total);
+}
+
+/* GENEROWANIE REALISTYCZNEJ FAKTURY */
+function showReceipt(total) {
+    // Generowanie losowego unikalnego ID faktury
+    const invoiceNumber = "INV-" + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById("recInvoiceNo").innerText = invoiceNumber;
+
+    // Pobranie aktualnej daty i czasu
+    const now = new Date();
+    const dateString = now.getFullYear() + "-" + 
+                       String(now.getMonth()+1).padStart(2, '0') + "-" + 
+                       String(now.getDate()).padStart(2, '0') + " " + 
+                       String(now.getHours()).padStart(2, '0') + ":" + 
+                       String(now.getMinutes()).padStart(2, '0');
+    document.getElementById("recDate").innerText = dateString;
+
+    // Tworzenie pozycji w tabeli faktury
+    const tableBody = document.getElementById("receiptTableBody");
+    tableBody.innerHTML = "";
+
+    const itemsCount = {};
+    cart.forEach(item => itemsCount[item.name] = (itemsCount[item.name] || 0) + 1);
+    const uniqueItems = [...new Set(cart.map(item => item.name))];
+
+    uniqueItems.forEach(name => {
+        const itemSample = cart.find(item => item.name === name);
+        const qty = itemsCount[name];
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${name}</td>
+            <td style="text-align: center;">${qty}</td>
+            <td style="text-align: right;">${(itemSample.price * qty).toFixed(2)} zł</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    // Obliczenia podatkowe (VAT 23% zawarty w cenie brutto)
+    const netto = total / 1.23;
+    const vat = total - netto;
+
+    document.getElementById("recNetto").innerText = netto.toFixed(2) + " zł";
+    document.getElementById("recVat").innerText = vat.toFixed(2) + " zł";
+    document.getElementById("recTotal").innerText = total.toFixed(2) + " zł";
+
+    // Wyświetlenie okna faktury
+    document.getElementById("receiptScreen").style.display = "flex";
+
+    // Czyszczenie koszyka po udanej płatności
+    cart = [];
+    updateCartUI();
+}
+
+/* OBSŁUGA OKIEN MODALNYCH (WIĘCEJ / ZAMKNIJ) */
+function openMore(index) {
+    const pack = cardPacks[index];
+    document.getElementById("modalTitle").innerText = pack.name;
+    document.getElementById("modalDesc").innerText = pack.description;
+
+    const reviewsContainer = document.getElementById("modalReviews");
+    reviewsContainer.innerHTML = "";
+
+    pack.reviews.forEach(rev => {
+        let starString = "⭐".repeat(rev.stars);
+        reviewsContainer.innerHTML += `
+            <div class="review">
+                <div class="stars">${starString}</div>
+                "${rev.text}"
+                <span class="review-author">— Zweryfikowany nabywca: ${rev.author}</span>
+            </div>
+        `;
+    });
+
+    document.getElementById("moreScreen").style.display = "flex";
+}
+
+function closeMore() {
+    document.getElementById("moreScreen").style.display = "none";
+}
+
+function closeReceipt() {
+    document.getElementById("receiptScreen").style.display = "none";
+}
+
+/* INICJALIZACJA STARTOWA SYSTEMU */
+renderShop();
+updateMoney();
+updateCartUI();
+</script>
+
+</body>
+</html>

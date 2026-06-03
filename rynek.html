@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Konfigurator Kart</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #15be39; margin: 0; padding: 20px; text-align: center; }
+        
+        .ekran { display: none; }
+        .aktywny { display: block; }
+        
+        .grid-kart { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .karta-przycisk { padding: 20px; border: 2px solid #333; border-radius: 10px; background: white; cursor: pointer; font-size: 16px; font-weight: bold; transition: transform 0.2s; width: 180px; }
+        .karta-przycisk:hover { transform: scale(1.05); background-color: #202020; }
+        
+        #ekran-edycji { background: rgb(92, 92, 92); padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: 40px auto; }
+        select, button { padding: 12px; font-size: 16px; margin: 10px 0; width: 100%; border-radius: 5px; cursor: pointer; }
+        
+        .przycisk-sprzedaj { background-color: #28a745; color: rgb(109, 109, 109); border: none; font-weight: bold; font-size: 18px; margin-top: 20px; }
+        .przycisk-sprzedaj:hover { background-color: #218838; }
+        .przycisk-wstecz { background-color: #6c757d; color: rgb(54, 54, 54); border: none; }
+        .przycisk-wstecz:hover { background-color: #5a6268; }
+        
+        #wycena { font-size: 22px; font-weight: bold; color: #0056b3; margin: 20px 0; }
+        #portfel { font-size: 24px; font-weight: bold; color: white; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; display: inline-block; margin-bottom: 20px; }
+        button{
+          background-color: grey;
+        }
+        a{
+          text-decoration: none;
+          color: black;
+        }
+    </style>
+</head>
+<body>
+<a href="index.html"> dom</a>
+<div id="ekran-glowny" class="ekran aktywny">
+    <h1>Wybierz bazę karty 🎴</h1>
+    <div id="portfel">Stan konta: 0 zł</div>
+    <p>Kliknij w kartę, aby przejść do trybu pełnoekranowego konfiguratora.</p>
+    <div id="lista-kart" class="grid-kart"></div>
+</div>
+
+<div id="ekran-edycji" class="ekran">
+    <h2 id="wybrana-karta-tytul">Karta</h2>
+    <p>Skonfiguruj modyfikatory, aby określić procentowy wzrost ceny.</p>
+
+    <label>Wybierz tło:</label>
+    <select id="wybor-tla" onchange="obliczSzacunkowaCene()">
+        <option value="0">Biała (+0%)</option>
+        <option value="5">Niebieska (+5%)</option>
+        <option value="10">Zielona (+10%)</option>
+        <option value="15">Złota (+15%)</option>
+        <option value="25">Różowa (+25%)</option>
+    </select>
+
+    <label>Wybierz obramówkę rysunku:</label>
+    <select id="wybor-obramowki" onchange="obliczSzacunkowaCene()">
+        <option value="0">Szara (+0%)</option>
+        <option value="15">złota (+15%)</option>
+        <option value="30">Różowa (+30%)</option>
+    </select>
+
+    <label>Wybierz limitowany nakład (Serial):</label>
+    <select id="wybor-serialu" onchange="obliczSzacunkowaCene()">
+        <option value="1">nie numerowana</option>
+        <option value="1.1">1/125 (1.1x)</option>
+        <option value="1.2">1/100 (1.2x)</option>
+        <option value="1.5">1/75 (1.5x)</option>
+        <option value="1.7">1/50 (1.7x)</option>
+        <option value="1.9">1/25 (1.9x)</option>
+        <option value="2">1/15 (2x)</option>
+        <option value="3">1/10 (3x)</option>
+        <option value="4">1/5 (4x)</option>
+        <option value="5">1/1 (5x)</option>
+    </select>
+
+    <div style="margin: 15px 0; text-align: left; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;">
+        <label style="color: white; font-weight: bold; cursor: pointer;">
+            <input type="checkbox" id="wybor-podpisu" onchange="obliczSzacunkowaCene()" style="width: auto; margin-right: 10px;"> 
+            ✍️ Czy karta posiada oryginalny podpis autora? (2x)
+        </label>
+    </div>
+
+    <div id="wycena">Szacowana wartość bazowa: --- zł</div>
+    <p style="font-size: 14px; color: gray;">Ostateczna cena ulegnie losowej zmianie na rynku w momencie sprzedaży!</p>
+
+    <button class="przycisk-sprzedaj" onclick="sprzedajKarte()">💸 Sprzedaj na Rynku</button>
+    <button class="przycisk-wstecz" onclick="wrocDoMenu()">🔙 Anuluj i wróć</button>
+</div>
+
+<script>
+    const typyKart = [
+        { nazwa: "Cztero kropkowa", cena: 50000 },
+        { nazwa: "Dwa kwadratowa", cena: 10000 },
+        { nazwa: "Spirala", cena: 6000 },
+        { nazwa: "Gwiazdka", cena: 4000 },
+        { nazwa: "Kółko z kropką", cena: 1000 },
+        { nazwa: "Kwadrat z kropką", cena: 950 },
+        { nazwa: "Trójkąt z kropką", cena: 900 },
+        { nazwa: "Kółko", cena: 800 },
+        { nazwa: "Kwadrat", cena: 700 },
+        { nazwa: "Trójkąt", cena: 650 }
+    ];
+
+    let aktualnaBazaCena = 0;
+    let pieniadze = 0;
+
+    function wczytajPortfel() {
+        let zapisanePieniadze = localStorage.getItem("cartymoney");
+        if (zapisanePieniadze !== null) {
+            pieniadze = parseInt(zapisanePieniadze);
+        } else {
+            pieniadze = 0;
+        }
+        zaktualizujWidokPortfela();
+    }
+
+    function zaktualizujWidokPortfela() {
+        document.getElementById("portfel").innerText = "Stan konta: " + pieniadze + " zł";
+    }
+
+    function generujMenu() {
+        const lista = document.getElementById("lista-kart");
+        typyKart.forEach((karta, index) => {
+            let btn = document.createElement("button");
+            btn.className = "karta-przycisk";
+            btn.innerText = karta.nazwa;
+            btn.onclick = () => otworzEdytor(index); 
+            lista.appendChild(btn);
+        });
+    }
+
+    function otworzEdytor(index) {
+        document.getElementById("ekran-glowny").classList.remove("aktywny");
+        document.getElementById("ekran-edycji").classList.add("aktywny");
+        
+        document.getElementById("wybrana-karta-tytul").innerText = "sprzedaj:'' " + typyKart[index].nazwa + "''";
+        aktualnaBazaCena = typyKart[index].cena;
+        
+        document.getElementById("wybor-tla").value = "0";
+        document.getElementById("wybor-obramowki").value = "0";
+        document.getElementById("wybor-serialu").value = "1"; 
+        document.getElementById("wybor-podpisu").checked = false; 
+        
+        obliczSzacunkowaCene(); 
+    }
+
+    function wrocDoMenu() {
+        document.getElementById("ekran-edycji").classList.remove("aktywny");
+        document.getElementById("ekran-glowny").classList.add("aktywny");
+    }
+
+    function obliczSzacunkowaCene() {
+        let procentTla = parseInt(document.getElementById("wybor-tla").value);
+        let procentObramowki = parseInt(document.getElementById("wybor-obramowki").value);
+        
+        // parseFloat zamiast parseInt, żeby czytać liczby z ułamkiem (np. 1.1)
+        let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
+        let bonusZaPodpis = document.getElementById("wybor-podpisu").checked ? 2 : 0;
+        
+        let sumaProcentow = procentTla + procentObramowki;
+        
+        // Zgodnie z Twoim życzeniem: zamiast mnożyć wszystko razy 5, dodajemy 5 do mnożnika (np. 50 + 5 = 55)
+       let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 2 : 1;
+    let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu;
+        
+        let cenaZBonusami = (aktualnaBazaCena * (1 + (sumaProcentow / 100))) * koncowyMnoznik;
+        
+        document.getElementById("wycena").innerText = "Wartość przed rynkiem: " + Math.round(cenaZBonusami) + " zł";
+    }
+
+    function sprzedajKarte() {
+        let procentTla = parseInt(document.getElementById("wybor-tla").value);
+        let procentObramowki = parseInt(document.getElementById("wybor-obramowki").value);
+        let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
+        let bonusZaPodpis = document.getElementById("wybor-podpisu").checked ? 2 : 0;
+        
+        let sumaProcentow = procentTla + procentObramowki;let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 5 : 1;
+let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu;
+        
+        let cenaZBonusami = (aktualnaBazaCena * (1 + (sumaProcentow / 100))) * koncowyMnoznik;
+        
+        let losowyProcentRynek = (Math.random() * 0.4) - 0.2; 
+        
+        let ostatecznaCena = cenaZBonusami * (1 + losowyProcentRynek);
+        ostatecznaCena = Math.round(ostatecznaCena); 
+        
+        pieniadze += ostatecznaCena;
+        localStorage.setItem("cartymoney", pieniadze);
+        zaktualizujWidokPortfela();
+        
+        wrocDoMenu(); 
+    }
+
+    wczytajPortfel();
+    generujMenu();
+</script>
+</body>
+</html>
