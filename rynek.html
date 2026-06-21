@@ -44,7 +44,21 @@
 <div id="ekran-edycji" class="ekran">
     <h2 id="wybrana-karta-tytul">Karta</h2>
     <p>Skonfiguruj modyfikatory, aby określić procentowy wzrost ceny.</p>
-
+    <<label>Ocena "er":</label>
+        <select id="wybor-er" onchange="obliczSzacunkowaCene()">
+            <option value="1">Brak oceny</option>
+            <option value="0.5">0 (-50%)</option>
+            <option value="0.75">1 (-25%)</option>
+            <option value="1">2 (brak zmian)</option>
+            <option value="1.1">3 (1.1x)</option>
+            <option value="1.2">4 (1.2x)</option>
+            <option value="1.5">5 (1.5x)</option>
+            <option value="2">6 (2x)</option>
+            <option value="3">7 (3x)</option>
+            <option value="4">8 (4x)</option>
+            <option value="5">9 (5x)</option>
+            <option value="10">10 (10x)</option>
+        </select>
     <label>Wybierz tło:</label>
     <select id="wybor-tla" onchange="obliczSzacunkowaCene()">
         <option value="0">Biała (+0%)</option>
@@ -152,46 +166,45 @@
     }
 
     function obliczSzacunkowaCene() {
-        let procentTla = parseInt(document.getElementById("wybor-tla").value);
-        let procentObramowki = parseInt(document.getElementById("wybor-obramowki").value);
-        
-        // parseFloat zamiast parseInt, żeby czytać liczby z ułamkiem (np. 1.1)
-        let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
-        let bonusZaPodpis = document.getElementById("wybor-podpisu").checked ? 2 : 0;
-        
-        let sumaProcentow = procentTla + procentObramowki;
-        
-        // Zgodnie z Twoim życzeniem: zamiast mnożyć wszystko razy 5, dodajemy 5 do mnożnika (np. 50 + 5 = 55)
-       let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 2 : 1;
-    let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu;
-        
-        let cenaZBonusami = (aktualnaBazaCena * (1 + (sumaProcentow / 100))) * koncowyMnoznik;
-        
-        document.getElementById("wycena").innerText = "Wartość przed rynkiem: " + Math.round(cenaZBonusami) + " zł";
-    }
+    let elEr = document.getElementById("wybor-er");
+    if (!elEr) return; // Jeśli nie ma elementu, wyjdź z funkcji
 
-    function sprzedajKarte() {
-        let procentTla = parseInt(document.getElementById("wybor-tla").value);
-        let procentObramowki = parseInt(document.getElementById("wybor-obramowki").value);
-        let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
-        let bonusZaPodpis = document.getElementById("wybor-podpisu").checked ? 2 : 0;
-        
-        let sumaProcentow = procentTla + procentObramowki;let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 5 : 1;
-let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu;
-        
-        let cenaZBonusami = (aktualnaBazaCena * (1 + (sumaProcentow / 100))) * koncowyMnoznik;
-        
-        let losowyProcentRynek = (Math.random() * 0.4) - 0.2; 
-        
-        let ostatecznaCena = cenaZBonusami * (1 + losowyProcentRynek);
-        ostatecznaCena = Math.round(ostatecznaCena); 
-        
-        pieniadze += ostatecznaCena;
-        localStorage.setItem("cartymoney", pieniadze);
-        zaktualizujWidokPortfela();
-        
-        wrocDoMenu(); 
-    }
+    let procentTla = parseInt(document.getElementById("wybor-tla").value);
+    let procentObramowki = parseInt(document.getElementById("wybor-obramowki").value);
+    let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
+    let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 2 : 1;
+    let mnoznikEr = parseFloat(elEr.value);
+    
+    let sumaProcentow = procentTla + procentObramowki;
+    let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu * mnoznikEr;
+    
+    let cenaZBonusami = (aktualnaBazaCena * (1 + (sumaProcentow / 100))) * koncowyMnoznik;
+    
+    document.getElementById("wycena").innerText = "Wartość przed rynkiem: " + Math.round(cenaZBonusami) + " zł";
+}
+function sprzedajKarte() {
+    let procentTla = parseInt(document.getElementById("wybor-tla").value);
+    let procentObramowki = parseInt(document.getElementById("wybor-obramowki").value);
+    let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
+    let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 2 : 1;
+    
+    let sumaProcentow = procentTla + procentObramowki;
+    let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu * mnoznikEr; // Uwzględnienie er
+    
+    // Wewnątrz obliczSzacunkowaCene i sprzedajKarte:
+let mnoznikEr = parseFloat(document.getElementById("wybor-er").value);
+
+// Wzór:
+let cenaZBonusami = (aktualnaBazaCena * (1 + (sumaProcentow / 100))) * mnoznikSerialu * mnoznikPodpisu * mnoznikEr;
+    
+    let losowyProcentRynek = (Math.random() * 0.4) - 0.2; 
+    let ostatecznaCena = Math.round(cenaZBonusami * (1 + losowyProcentRynek));
+    
+    pieniadze += ostatecznaCena;
+    localStorage.setItem("cartymoney", pieniadze);
+    zaktualizujWidokPortfela();
+    wrocDoMenu(); 
+}
 
     wczytajPortfel();
     generujMenu();
