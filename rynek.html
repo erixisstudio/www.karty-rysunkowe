@@ -183,27 +183,31 @@
     document.getElementById("wycena").innerText = "Wartość przed rynkiem: " + Math.round(cenaZBonusami) + " zł";
 }
 function sprzedajKarte() {
+    // 1. Pobieramy wszystkie wartości najpierw
     let procentTla = parseInt(document.getElementById("wybor-tla").value);
     let procentObramowki = parseInt(document.getElementById("wybor-obramowki").value);
     let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
     let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 2 : 1;
+    let mnoznikEr = parseFloat(document.getElementById("wybor-er").value);
     
+    // 2. Obliczamy wszystko po kolei
     let sumaProcentow = procentTla + procentObramowki;
-    let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu * mnoznikEr; // Uwzględnienie er
     
-    // Wewnątrz obliczSzacunkowaCene i sprzedajKarte:
-let mnoznikEr = parseFloat(document.getElementById("wybor-er").value);
-
-// Wzór:
-let cenaZBonusami = (aktualnaBazaCena * (1 + (sumaProcentow / 100))) * mnoznikSerialu * mnoznikPodpisu * mnoznikEr;
+    // Wzór: baza * procenty * mnożniki
+    let cenaZBonusami = (aktualnaBazaCena * (1 + (sumaProcentow / 100))) * mnoznikSerialu * mnoznikPodpisu * mnoznikEr;
     
+    // 3. Losowanie szczęścia na rynku
     let losowyProcentRynek = (Math.random() * 0.4) - 0.2; 
     let ostatecznaCena = Math.round(cenaZBonusami * (1 + losowyProcentRynek));
     
+    // 4. Aktualizacja portfela
     pieniadze += ostatecznaCena;
     localStorage.setItem("cartymoney", pieniadze);
+    
+    // 5. Odświeżenie interfejsu
     zaktualizujWidokPortfela();
-    wrocDoMenu(); 
+    wrocDoMenu();
+    
 }
 
     wczytajPortfel();
