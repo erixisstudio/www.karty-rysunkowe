@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>karty-rysunkowe.pl - rynek SpongeBob</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #15be39; margin: 0; padding: 20px; text-align: center; }
+        
+        .ekran { display: none; }
+        .aktywny { display: block; }
+        
+        .grid-kart { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .karta-przycisk { padding: 20px; border: 2px solid #333; border-radius: 10px; background: white; cursor: pointer; font-size: 16px; font-weight: bold; transition: transform 0.2s; width: 180px; }
+        .karta-przycisk:hover { transform: scale(1.05); background-color: #f0f0f0; }
+        
+        #ekran-edycji { background: rgb(92, 92, 92); padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 600px; margin: 40px auto; color: white; }
+        select, button { padding: 12px; font-size: 16px; margin: 10px 0; width: 100%; border-radius: 5px; cursor: pointer; }
+        
+        .przycisk-sprzedaj { background-color: #28a745; color: rgb(153, 153, 153); border: none; font-weight: bold; font-size: 18px; margin-top: 20px; }
+        .przycisk-sprzedaj:hover { background-color: #218838; }
+        .przycisk-wstecz { background-color: #6c757d; color: white; border: none; }
+        .przycisk-wstecz:hover { background-color: #5a6268; }
+        
+        #wycena { font-size: 24px; font-weight: bold; color: #ffcc00; margin: 20px 0; text-shadow: 1px 1px 2px black; }
+        #portfel { font-size: 24px; font-weight: bold; color: white; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; display: inline-block; margin-bottom: 20px; }
+        
+        label { display: block; text-align: left; margin-top: 15px; font-weight: bold; }
+        button { background-color: grey; color: rgb(109, 109, 109); border: none; }
+        a { text-decoration: none; color: black; font-weight: bold; background: grey; padding: 5px 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<a href="index.html">🏠 Dom</a>
+
+<div id="ekran-glowny" class="ekran aktywny">
+    <h1>Wybierz kartę do sprzedania na rynku 🎴</h1>
+    <div id="portfel">Stan konta: 0 monet</div>
+    <p>Kliknij w kartę, którą chcesz wystawić i skonfigurować.</p>
+    <div id="lista-kart" class="grid-kart"></div>
+</div>
+
+<div id="ekran-edycji" class="ekran">
+    <h2 id="wybrana-karta-tytul">Sprzedaj: Kartę</h2>
+    <p>Ustaw odpowiednie cechy karty, aby obliczyć jej wartość rynkową.</p>
+
+    <label id="label-logo">Wybierz holo:</label>
+    <select id="wybor-logo" onchange="obliczSzacunkowaCene()">
+        <option value="0">Brak holo (+0%)</option>
+        <option value="10">raibow holo (+10%)</option>
+        <option value="25">Zielone holo (+25%)</option>
+        <option value="50">wavy holo (+50%)</option>
+        <option value="100">diamont holo ( +100%)</option>
+    </select>
+ 
+    <label>Wybierz limit:</label>
+    <select id="wybor-serialu" onchange="obliczSzacunkowaCene()">
+        <option value="1">Nie numerowana (1x)</option>
+        <option value="1.2">Limit: /199 (1.2x)</option>
+        <option value="1.5">Limit: /99 (1.5x)</option>
+        <option value="2">Limit: /50 (2x)</option>
+        <option value="3">Limit: /5 (3x)</option>
+    </select>
+
+    <div style="margin: 15px 0; text-align: left; background: rgba(255, 255, 255, 0.1); padding: 10px; border-radius: 5px;">
+        <label style="color: rgb(85, 85, 85); font-weight: bold; cursor: pointer; margin: 0;">
+            <input type="checkbox" id="wybor-podpisu" onchange="obliczSzacunkowaCene()" style="width: auto; margin-right: 10px;"> 
+            Czy karta posiada podpis? (5x)
+        </label>
+    </div>
+
+    <div id="wycena">Szacowana wartość bazowa: --- monet</div>
+
+    <button class="przycisk-sprzedaj" onclick="sprzedajKarte()">Zatwierdź i sprzedaj</button>
+    <button class="przycisk-wstecz" onclick="wrocDoMenu()">Anuluj i wróć</button>
+</div>
+
+<script>
+    const kartySpongeBob = [
+        { nazwa: "base", cena: 70000, typ: "baseset" },
+
+        { nazwa: "Menu", cena: 80000, typ: "menu" },
+
+        { nazwa: "masterful memes", cena: 100000, typ: "specjalna" },
+
+        { nazwa: "Song Song", cena: 90000, typ: "specjalna" },
+        { nazwa: "Sketch Card", cena: 1000000, typ: "specjalna" },
+    ];
+
+    let wybranyIndex = 0;
+    let aktualnaBazaCena = 0;
+    let pieniadze = 0;
+
+    function wczytajPortfel() {
+        let zapisanePieniadze = localStorage.getItem("cartymoney");
+        if (zapisanePieniadze !== null) {
+            pieniadze = parseInt(zapisanePieniadze);
+        } else {
+            pieniadze = 0;
+            localStorage.setItem("cartymoney", "0");
+        }
+        zaktualizujWidokPortfela();
+    }
+
+    function zaktualizujWidokPortfela() {
+        document.getElementById("portfel").innerText = pieniadze + " zł";
+    }
+
+    function generujMenu() {
+        const lista = document.getElementById("lista-kart");
+        kartySpongeBob.forEach((karta, index) => {
+            let btn = document.createElement("button");
+            btn.className = "karta-przycisk";
+            btn.innerText = karta.nazwa;
+            btn.onclick = () => otworzEdytor(index); 
+            lista.appendChild(btn);
+        });
+    }
+
+    function otworzEdytor(index) {
+        wybranyIndex = index;
+        const karta = kartySpongeBob[index];
+
+        document.getElementById("ekran-glowny").classList.remove("aktywny");
+        document.getElementById("ekran-edycji").classList.add("aktywny");
+        
+        document.getElementById("wybrana-karta-tytul").innerText = "Sprzedajesz: " + karta.nazwa;
+        aktualnaBazaCena = karta.cena;
+        
+        document.getElementById("wybor-logo").value = "0";
+        document.getElementById("wybor-serialu").value = "1"; 
+        document.getElementById("wybor-podpisu").checked = false; 
+
+        if (karta.typ === "menu" || karta.typ === "specjalna") {
+            if(karta.typ === "specjalna")
+            document.getElementById("wybor-logo").disabled = true;
+            document.getElementById("wybor-podpisu").disabled = true;
+            document.getElementById("wybor-logo").value = "0";
+            document.getElementById("wybor-podpisu").checked = false;
+        } else if (karta.typ === "baseset"){
+            document.getElementById("wybor-logo").disabled = false;
+            document.getElementById("wybor-podpisu").disabled = false;
+
+        }
+        else {
+            document.getElementById("wybor-logo").disabled = false;
+            document.getElementById("wybor-podpisu").disabled = false;
+        }
+        
+        obliczSzacunkowaCene(); 
+    }
+
+    function wrocDoMenu() {
+        document.getElementById("ekran-edycji").classList.remove("aktywny");
+        document.getElementById("ekran-glowny").classList.add("aktywny");
+    }
+
+    function obliczSzacunkowaCene() {
+        let procentLogo = parseInt(document.getElementById("wybor-logo").value);
+        let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
+        
+        let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 5 : 1;
+        
+        let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu;
+        
+        let cenaZBonusami = (aktualnaBazaCena * (1 + (procentLogo / 100))) * koncowyMnoznik;
+        
+        document.getElementById("wycena").innerText = "Wartość karty: " + Math.round(cenaZBonusami) + " zł";
+        return cenaZBonusami;
+    }
+
+    function sprzedajKarte() {
+        let cenaZBonusami = obliczSzacunkowaCene();
+        
+        let losowyProcentRynek = (Math.random() * 0.4) - 0.2; 
+        
+        let ostatecznaCena = cenaZBonusami * (1 + losowyProcentRynek);
+        ostatecznaCena = Math.round(ostatecznaCena); 
+        
+        pieniadze += ostatecznaCena;
+        localStorage.setItem("cartymoney", pieniadze.toString());
+        
+        zaktualizujWidokPortfela();
+        
+        wrocDoMenu(); 
+    }
+
+    wczytajPortfel();
+    generujMenu();
+</script>
+</body>
+</html>

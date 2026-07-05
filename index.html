@@ -29,7 +29,7 @@ a {
     position: absolute;
     width: 100%;
     background: rgb(51, 51, 51);
-    height: 5%;
+    height: 10%;
     top: 0;
     left: 0;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -332,6 +332,7 @@ button:active {
 
 <a style="position: absolute; left: 5%; top: 8px;" href="tutorial.html">wszystkie karty</a>
 <a style="position: absolute; left: 20%; top: 8px;" href="rynek.html">rynek</a>
+<a style="position: absolute; left: 20%; top: 50px;" href="rynek.html">rynek spongebob 26</a>
 <a style="position: absolute; left: 30%; top: 8px;" href="rynekspongebob.html">rynek spongebob</a>
 <a style="position: absolute; left: 45%; top: 8px;" href="rynekpiłkarski.html">rynek Piłkarski</a>
 <a style="position: absolute; left: 60%; top: 8px;" href="rynekharry.html">rynek harry potter</a>
@@ -561,6 +562,30 @@ const cardPacks = [
         price: 500000,
         cardsCount: 5,
         description: "paczka z motywem poekomonów, zawiera pięć kart",
+        reviews: [ 
+            { author: "mateusz.ws", text: "Karty dotarły w idealnym stanie. Legendarny drop przyspieszył bicie serca.", stars: 5 },
+            { author: "wojciech.ad", text: "Grafiki na kartach rzadkich to mistrzostwo świata", stars: 5 },
+            { author: "konrad.jg", text: "Wizualnie cudo", stars: 5 },
+            { author: "norbert.gs", text: "Super jakość", stars: 5 },
+            { author: "patryk.wk", text: "Ideale", stars: 5 },
+            { author: "rafal.ha", text: "", stars: 5 },
+
+            // 4 GWIAZDKI
+            { author: "damian.sa", text: "Świetna zabawa, chociaż budowanie konkurencyjnej talii wymaga dokupienia kilku boosterów.", stars: 4 },
+            { author: "daniel.gs", text: "Bardzo ładne matowe wykończenie rewersów. Karty nie ślizgają się w dłoniach.", stars: 4 },
+            { author: "arkadiusz.jf", text: "", stars: 4 },
+            { author: "radoslaw.gw", text: "Solidne cztery gwiazdki.", stars: 4 },
+            { author: "emil.ga", text: "Proporcja ceny do jakości jest na dobrym poziomie. Na pewno kupię kolejny zestaw.", stars: 4 },
+            { author: "cezary.we", text: "polecam.", stars: 4 },
+            { author: "igor.sh", text: "Efekty holograficzne robią wrażenie. Szkoda, że mało mi leciało.", stars: 4 },
+        ]
+    },
+    {
+        id: "spongebob 2026",
+        name: "(limitowane!)spongebob 26",
+        price: 1000000,
+        cardsCount: 12,
+        description: "paczka z motywem spongebob od topps najnowsza edycja z 2026 roku, zawiera 3 paczki kart w każdej są 4 karty, łącznie 12 kart, zawiera 3 limitowane karty minimalnie",
         reviews: [ 
             { author: "mateusz.ws", text: "Karty dotarły w idealnym stanie. Legendarny drop przyspieszył bicie serca.", stars: 5 },
             { author: "wojciech.ad", text: "Grafiki na kartach rzadkich to mistrzostwo świata", stars: 5 },
