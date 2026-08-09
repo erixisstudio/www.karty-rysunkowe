@@ -58,7 +58,6 @@
         { nazwa: "tier 4", cena: 4500 },
         { nazwa: "tier 5", cena: 1000 },
         { nazwa: "tier s", cena: 1100 },
-
     ];
 
     let wybranyIndex = 0;
@@ -101,21 +100,6 @@
         document.getElementById("wybrana-karta-tytul").innerText = "Sprzedajesz: " + karta.nazwa;
         aktualnaBazaCena = karta.cena;
         
-        document.getElementById("wybor-logo").value = "0";
-        document.getElementById("wybor-serialu").value = "1";  
-
-        if (karta.typ === "menu" || karta.typ === "specjalna") {
-            if(karta.typ === "specjalna")
-            document.getElementById("wybor-logo").disabled = true;;
-            document.getElementById("wybor-logo").value = "0";
-        } else if (karta.typ === "baseset"){
-            document.getElementById("wybor-logo").disabled = false;
-
-        }
-        else {
-            document.getElementById("wybor-logo").disabled = false;
-        }
-        
         obliczSzacunkowaCene(); 
     }
 
@@ -125,13 +109,7 @@
     }
 
     function obliczSzacunkowaCene() {
-        let procentLogo = parseInt(document.getElementById("wybor-logo").value);
-        let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
-        
-        
-        let koncowyMnoznik = mnoznikSerialu;
-        
-        let cenaZBonusami = (aktualnaBazaCena * (1 + (procentLogo / 100))) * koncowyMnoznik;
+        let cenaZBonusami = aktualnaBazaCena;
         
         document.getElementById("wycena").innerText = "Wartość karty: " + Math.round(cenaZBonusami) + " zł";
         return cenaZBonusami;
@@ -141,7 +119,6 @@
         let cenaZBonusami = obliczSzacunkowaCene();
         
         let losowyProcentRynek = (Math.random() * 0.4) - 0.2; 
-        
         let ostatecznaCena = cenaZBonusami * (1 + losowyProcentRynek);
         ostatecznaCena = Math.round(ostatecznaCena); 
         
@@ -149,7 +126,6 @@
         localStorage.setItem("cartymoney", pieniadze.toString());
         
         zaktualizujWidokPortfela();
-        
         wrocDoMenu(); 
     }
 
