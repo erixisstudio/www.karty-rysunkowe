@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>karty-rysunkowe.pl - rynek SpongeBob 2026</title>
+    <title>karty-rysunkowe.pl - rynek lorcana</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #15be39; margin: 0; padding: 20px; text-align: center; }
         
@@ -42,51 +42,21 @@
 
 <div id="ekran-edycji" class="ekran">
     <h2 id="wybrana-karta-tytul">Sprzedaj: Kartę</h2>
-    <p>Ustaw odpowiednie cechy karty, aby obliczyć jej wartość rynkową.</p>
 
-    <label id="label-logo">Wybierz holo:</label>
-    <select id="wybor-logo" onchange="obliczSzacunkowaCene()">
-        <option value="0">Brak holo (+0%)</option>
-        <option value="10">raibow holo (+10%)</option>
-        <option value="25">Zielone holo (+25%)</option>
-        <option value="50">wavy holo (+50%)</option>
-        <option value="100">diamont holo ( +100%)</option>
-    </select>
- 
-    <label>Wybierz limit:</label>
-    <select id="wybor-serialu" onchange="obliczSzacunkowaCene()">
-        <option value="1">Nie numerowana (1x)</option>
-        <option value="1.2">Limit: /199 (1.2x)</option>
-        <option value="1.5">Limit: /99 (1.5x)</option>
-        <option value="2">Limit: /50 (2x)</option>
-        <option value="3">Limit: /5 (3x)</option>
-    </select>
 
-    <div style="margin: 15px 0; text-align: left; background: rgba(255, 255, 255, 0.1); padding: 10px; border-radius: 5px;">
-        <label style="color: rgb(85, 85, 85); font-weight: bold; cursor: pointer; margin: 0;">
-            <input type="checkbox" id="wybor-podpisu" onchange="obliczSzacunkowaCene()" style="width: auto; margin-right: 10px;"> 
-            Czy karta posiada podpis? (5x)
-        </label>
-    </div>
-
-    <div id="wycena">Szacowana wartość bazowa: --- monet</div>
+    <div id="wycena"> wartość : --- monet</div>
 
     <button class="przycisk-sprzedaj" onclick="sprzedajKarte()">Zatwierdź i sprzedaj</button>
     <button class="przycisk-wstecz" onclick="wrocDoMenu()">Anuluj i wróć</button>
 </div>
 
 <script>
-    const kartySpongeBob = [
-        { nazwa: "base", cena: 220, typ: "baseset" },
-
-        { nazwa: "Menu", cena: 260, typ: "menu" },
-
-        { nazwa: "masterful memes", cena: 280, typ: "specjalna" },
-        
-        { nazwa: "MM", cena: 300, typ: "specjalna" },
-
-        { nazwa: "Song Song", cena: 360, typ: "specjalna" },
-        { nazwa: "Sketch Card", cena: 3000, typ: "specjalna" },
+    const kartyPilkarskie = [
+        { nazwa: "c", cena: 50 },
+        { nazwa: "r", cena: 75 },
+        { nazwa: "sr", cena: 100 },
+        { nazwa: "l", cena: 200 },
+        { nazwa: "e", cena: 300 },
     ];
 
     let wybranyIndex = 0;
@@ -110,7 +80,7 @@
 
     function generujMenu() {
         const lista = document.getElementById("lista-kart");
-        kartySpongeBob.forEach((karta, index) => {
+        kartyPilkarskie.forEach((karta, index) => {
             let btn = document.createElement("button");
             btn.className = "karta-przycisk";
             btn.innerText = karta.nazwa;
@@ -121,33 +91,13 @@
 
     function otworzEdytor(index) {
         wybranyIndex = index;
-        const karta = kartySpongeBob[index];
+        const karta = kartyPilkarskie[index];
 
         document.getElementById("ekran-glowny").classList.remove("aktywny");
         document.getElementById("ekran-edycji").classList.add("aktywny");
         
         document.getElementById("wybrana-karta-tytul").innerText = "Sprzedajesz: " + karta.nazwa;
         aktualnaBazaCena = karta.cena;
-        
-        document.getElementById("wybor-logo").value = "0";
-        document.getElementById("wybor-serialu").value = "1"; 
-        document.getElementById("wybor-podpisu").checked = false; 
-
-        if (karta.typ === "menu" || karta.typ === "specjalna") {
-            if(karta.typ === "specjalna")
-            document.getElementById("wybor-logo").disabled = true;
-            document.getElementById("wybor-podpisu").disabled = true;
-            document.getElementById("wybor-logo").value = "0";
-            document.getElementById("wybor-podpisu").checked = false;
-        } else if (karta.typ === "baseset"){
-            document.getElementById("wybor-logo").disabled = false;
-            document.getElementById("wybor-podpisu").disabled = false;
-
-        }
-        else {
-            document.getElementById("wybor-logo").disabled = false;
-            document.getElementById("wybor-podpisu").disabled = false;
-        }
         
         obliczSzacunkowaCene(); 
     }
@@ -158,14 +108,7 @@
     }
 
     function obliczSzacunkowaCene() {
-        let procentLogo = parseInt(document.getElementById("wybor-logo").value);
-        let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
-        
-        let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 5 : 1;
-        
-        let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu;
-        
-        let cenaZBonusami = (aktualnaBazaCena * (1 + (procentLogo / 100))) * koncowyMnoznik;
+        let cenaZBonusami = aktualnaBazaCena;
         
         document.getElementById("wycena").innerText = "Wartość karty: " + Math.round(cenaZBonusami) + " zł";
         return cenaZBonusami;
@@ -175,7 +118,6 @@
         let cenaZBonusami = obliczSzacunkowaCene();
         
         let losowyProcentRynek = (Math.random() * 0.4) - 0.2; 
-        
         let ostatecznaCena = cenaZBonusami * (1 + losowyProcentRynek);
         ostatecznaCena = Math.round(ostatecznaCena); 
         
@@ -183,7 +125,6 @@
         localStorage.setItem("cartymoney", pieniadze.toString());
         
         zaktualizujWidokPortfela();
-        
         wrocDoMenu(); 
     }
 
