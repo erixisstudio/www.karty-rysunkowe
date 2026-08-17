@@ -43,7 +43,21 @@
 <div id="ekran-edycji" class="ekran">
     <h2 id="wybrana-karta-tytul">Sprzedaj: Kartę</h2>
 
-
+<label>Ocena "er":</label>
+<select id="wybor-er" onchange="obliczSzacunkowaCene()">
+    <option value="1">Brak oceny</option>
+    <option value="0.5">0 (-50%)</option>
+    <option value="0.75">1 (-25%)</option>
+    <option value="1">2 (brak zmian)</option>
+    <option value="1.1">3 (1.1x)</option>
+    <option value="1.2">4 (1.2x)</option>
+    <option value="1.5">5 (1.5x)</option>
+    <option value="2">6 (2x)</option>
+    <option value="3">7 (3x)</option>
+    <option value="4">8 (4x)</option>
+    <option value="5">9 (5x)</option>
+    <option value="10">10 (10x)</option>
+</select>
     <div id="wycena"> wartość : --- monet</div>
 
     <button class="przycisk-sprzedaj" onclick="sprzedajKarte()">Zatwierdź i sprzedaj</button>
@@ -109,11 +123,13 @@
     }
 
     function obliczSzacunkowaCene() {
-        let cenaZBonusami = aktualnaBazaCena;
-        
-        document.getElementById("wycena").innerText = "Wartość karty: " + Math.round(cenaZBonusami) + " zł";
-        return cenaZBonusami;
-    }
+    let mnoznikEr = parseFloat(document.getElementById("wybor-er").value);
+
+    let cenaZBonusami = aktualnaBazaCena * mnoznikEr;
+    
+    document.getElementById("wycena").innerText = "Wartość karty: " + Math.round(cenaZBonusami) + " zł";
+    return cenaZBonusami;
+}
 
     function sprzedajKarte() {
         let cenaZBonusami = obliczSzacunkowaCene();
