@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>karty-rysunkowe.pl - rynek Piłkarski legends</title>
+    <title>karty-rysunkowe.pl - rynek Piłkarski match attax</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #15be39; margin: 0; padding: 20px; text-align: center; }
         
@@ -58,31 +58,8 @@
     <option value="5">9 (5x)</option>
     <option value="10">10 (10x)</option>
 </select>
-    <label id="label-logo">Wybierz kolor:</label>
-    <select id="wybor-logo" onchange="obliczSzacunkowaCene()">
-        <option value="0">Brak koloru (+0%)</option>
-        <option value="100"> niebieski (+100%)</option>
-        <option value="200"> zielony (+200%)</option>
-        <option value="500"> pomarańczowa (+500%)</option>
-    </select>
  
-    <label>Wybierz limit:</label>
-    <select id="wybor-serialu" onchange="obliczSzacunkowaCene()">
-        <option value="1">Nie numerowana (1x)</option>
-        <option value="1.2">Limit: /200 (1.2x)</option>
-        <option value="1.4">Limit: /100 (1.4x)</option>
-        <option value="2.5">Limit: /50 (2.5x)</option>
-        <option value="3">Limit: /10 (3x)</option>
-        <option value="4">Limit: /5 (4x)</option>
-        <option value="5">Limit: 1/1 One of One (5x)</option>
-    </select>
 
-    <div style="margin: 15px 0; text-align: left; background: rgba(255, 255, 255, 0.2); padding: 10px; border-radius: 5px;">
-    <label style="color: white; font-weight: bold; cursor: pointer; margin: 0;">
-        <input type="checkbox" id="wybor-podpisu" onchange="obliczSzacunkowaCene()" style="width: auto; margin-right: 10px;"> 
-        Czy karta posiada podpis? (3x)
-    </label>
-</div>
 
     <div id="wycena">Szacowana wartość bazowa: --- monet</div>
 
@@ -92,14 +69,22 @@
 
 <script>
     const kartyPilkarskie = [
-        { nazwa: "basic", cena: 45 },
+        { nazwa: "basic", cena: 1000 },
 
-        { nazwa: "furios", cena: 135 },
+        { nazwa: "kings of the europe", cena: 1100 },
 
-        { nazwa: "(goat)", cena: 300 },
+        { nazwa: "wingman", cena: 1100 },
 
-        { nazwa: "(best of best)", cena: 900 },
+        { nazwa: "pitch perfection", cena: 1200 },
+        
+        { nazwa: "clutch kids", cena: 1500 },
 
+
+        { nazwa: "100", cena: 1400 },
+        
+        { nazwa: "101", cena: 1600 },
+
+        { nazwa: "auto", cena: 2000 },
     ];
 
     let wybranyIndex = 0;
@@ -141,13 +126,7 @@
         
         document.getElementById("wybrana-karta-tytul").innerText = "Sprzedajesz: " + karta.nazwa;
         aktualnaBazaCena = karta.cena;
-        document.getElementById("wybor-logo").value = "0";
-document.getElementById("wybor-serialu").value = "1";
-document.getElementById("wybor-er").value = "1";
-document.getElementById("wybor-podpisu").checked = false;
 
-        
-        
         obliczSzacunkowaCene(); 
     }
 
@@ -157,19 +136,15 @@ document.getElementById("wybor-podpisu").checked = false;
     }
 
     function obliczSzacunkowaCene() {
-        let procentLogo = parseInt(document.getElementById("wybor-logo").value);
-let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
-let mnoznikEr = parseFloat(document.getElementById("wybor-er").value);
-
-let mnoznikPodpisu = document.getElementById("wybor-podpisu").checked ? 3 : 1;
-
-let koncowyMnoznik = mnoznikSerialu * mnoznikPodpisu * mnoznikEr;
-        
-        let cenaZBonusami = (aktualnaBazaCena * (1 + (procentLogo / 100))) * koncowyMnoznik;
-        
-        document.getElementById("wycena").innerText = "Wartość karty: " + Math.round(cenaZBonusami) + " zł";
-        return cenaZBonusami;
-    }
+    let mnoznikEr = parseFloat(document.getElementById("wybor-er").value);
+    
+    let koncowyMnoznik = mnoznikEr ;
+    
+    let cenaZBonusami = aktualnaBazaCena * koncowyMnoznik;
+    
+    document.getElementById("wycena").innerText = "Wartość karty: " + Math.round(cenaZBonusami) + " zł";
+    return cenaZBonusami;
+}
 
     function sprzedajKarte() {
         let cenaZBonusami = obliczSzacunkowaCene();
