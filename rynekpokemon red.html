@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>karty-rysunkowe.pl - rynek Piłkarski match attax</title>
+    <title>karty-rysunkowe.pl - rynek pokemon rec</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #15be39; margin: 0; padding: 20px; text-align: center; }
         
@@ -42,7 +42,7 @@
 
 <div id="ekran-edycji" class="ekran">
     <h2 id="wybrana-karta-tytul">Sprzedaj: Kartę</h2>
-    <p>Ustaw odpowiednie cechy karty, aby obliczyć jej wartość rynkową.</p>
+
 <label>Ocena "er":</label>
 <select id="wybor-er" onchange="obliczSzacunkowaCene()">
     <option value="1">Brak oceny</option>
@@ -58,10 +58,7 @@
     <option value="5">9 (5x)</option>
     <option value="10">10 (10x)</option>
 </select>
- 
-
-
-    <div id="wycena">Szacowana wartość bazowa: --- monet</div>
+    <div id="wycena"> wartość : --- monet</div>
 
     <button class="przycisk-sprzedaj" onclick="sprzedajKarte()">Zatwierdź i sprzedaj</button>
     <button class="przycisk-wstecz" onclick="wrocDoMenu()">Anuluj i wróć</button>
@@ -69,31 +66,11 @@
 
 <script>
     const kartyPilkarskie = [
-        { nazwa: "basic", cena: 1000 },
-
-        { nazwa: "kings of the europe", cena: 1100 },
-
-        { nazwa: "wingman", cena: 1100 },
-
-        { nazwa: "pitch perfection", cena: 1200 },
-        
-        { nazwa: "clutch kids", cena: 1300 },
-
-        { nazwa: "man/woman of the match", cena: 1300 },
-
-        { nazwa: "100", cena: 1400 },
-        
-        { nazwa: "101", cena: 1600 },
-
-        { nazwa: "auto", cena: 2400 },
-
-        { nazwa: "chrome x", cena: 1300 },
-        
-        { nazwa: "black edge edition", cena: 1300 },
-
-        { nazwa: "platinum pull", cena: 1300 },
-        
-        { nazwa: "infinity", cena: 2500 },
+        { nazwa: "stage 1", cena: 8000 },
+        { nazwa: "stage 2", cena: 10000 },
+        { nazwa: "v ", cena: 18000 },
+        { nazwa: "vstar ", cena: 18500 },
+        { nazwa: "vmax ", cena: 19000 },
     ];
 
     let wybranyIndex = 0;
@@ -135,7 +112,7 @@
         
         document.getElementById("wybrana-karta-tytul").innerText = "Sprzedajesz: " + karta.nazwa;
         aktualnaBazaCena = karta.cena;
-
+        
         obliczSzacunkowaCene(); 
     }
 
@@ -146,10 +123,8 @@
 
     function obliczSzacunkowaCene() {
     let mnoznikEr = parseFloat(document.getElementById("wybor-er").value);
-    
-    let koncowyMnoznik = mnoznikEr ;
-    
-    let cenaZBonusami = aktualnaBazaCena * koncowyMnoznik;
+
+    let cenaZBonusami = aktualnaBazaCena * mnoznikEr;
     
     document.getElementById("wycena").innerText = "Wartość karty: " + Math.round(cenaZBonusami) + " zł";
     return cenaZBonusami;
@@ -159,7 +134,6 @@
         let cenaZBonusami = obliczSzacunkowaCene();
         
         let losowyProcentRynek = (Math.random() * 0.4) - 0.2; 
-        
         let ostatecznaCena = cenaZBonusami * (1 + losowyProcentRynek);
         ostatecznaCena = Math.round(ostatecznaCena); 
         
@@ -167,7 +141,6 @@
         localStorage.setItem("cartymoney", pieniadze.toString());
         
         zaktualizujWidokPortfela();
-        
         wrocDoMenu(); 
     }
 
