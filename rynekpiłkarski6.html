@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>ultimate.pl - rynek  match attax</title>
+    <title>ultimate.pl - rynek grinders</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #15be39; margin: 0; padding: 20px; text-align: center; }
         
@@ -59,6 +59,18 @@
     <option value="10">10 (10x)</option>
 </select>
  
+    <label>Wybierz limit:</label>
+    <select id="wybor-serialu" onchange="obliczSzacunkowaCene()">
+        <option value="1">Nie numerowana (1x)</option>
+        <option value="1.2">Limit: /199 (1.2x)</option>
+        <option value="1.6">Limit: /150 (1.6x)</option>
+        <option value="1.7">Limit: /99 (1.7x)</option>
+        <option value="2">Limit: /50 (2x)</option>
+        <option value="2.5">Limit: /25 (2.5x)</option>
+        <option value="2.7">Limit: /10 (2.7x)</option>
+        <option value="3">Limit: /5 (3x)</option>
+        <option value="5">Limit: 1/1 (5x)</option>
+    </select>
 
 
     <div id="wycena">Szacowana wartość bazowa: --- monet</div>
@@ -69,33 +81,12 @@
 
 <script>
     const kartyPilkarskie = [
-        { nazwa: "basic", cena: 500 },
+        { nazwa: "basic", cena: 15 },
+        { nazwa: "furios", cena: 150 },
+        { nazwa: "furios", cena: 200 },
+        { nazwa: "limit ", cena: 1000 },
+        { nazwa: "auto", cena: 4000 },
 
-        { nazwa: "kings of the europe", cena: 1100 },
-
-        { nazwa: "wingman", cena: 1100 },
-
-        { nazwa: "pitch perfection", cena: 1200 },
-        
-        { nazwa: "clutch kids", cena: 1300 },
-
-        { nazwa: "man/woman of the match", cena: 1300 },
-
-        { nazwa: "hat trick hero", cena: 1300 },
-
-        { nazwa: "100", cena: 1400 },
-        
-        { nazwa: "101", cena: 1600 },
-
-        { nazwa: "auto", cena: 2400 },
-
-        { nazwa: "chrome x", cena: 1300 },
-        
-        { nazwa: "black edge edition", cena: 1300 },
-
-        { nazwa: "platinum pull", cena: 1300 },
-        
-        { nazwa: "infinity", cena: 2500 },
     ];
 
     let wybranyIndex = 0;
@@ -137,6 +128,8 @@
         
         document.getElementById("wybrana-karta-tytul").innerText = "Sprzedajesz: " + karta.nazwa;
         aktualnaBazaCena = karta.cena;
+        document.getElementById("wybor-er").value = "1";
+document.getElementById("wybor-serialu").value = "1"; 
 
         obliczSzacunkowaCene(); 
     }
@@ -148,8 +141,9 @@
 
     function obliczSzacunkowaCene() {
     let mnoznikEr = parseFloat(document.getElementById("wybor-er").value);
+    let mnoznikSerialu = parseFloat(document.getElementById("wybor-serialu").value);
     
-    let koncowyMnoznik = mnoznikEr ;
+    let koncowyMnoznik = mnoznikEr * mnoznikSerialu;
     
     let cenaZBonusami = aktualnaBazaCena * koncowyMnoznik;
     
