@@ -1,0 +1,625 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pl# | erixis studio</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px;
+            background: #101116;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .przycisk {
+            width: auto;
+            padding: 12px 18px;
+            background: #7457ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .przycisk:hover {
+            background: #6244ed;
+        }
+
+        .statystyki {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .statystyka {
+            background: #1b1d25;
+            border: 1px solid #30323e;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .statystyka p {
+            color: #a6a8b6;
+            margin: 0 0 10px;
+        }
+
+        .statystyka h2 {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        #kolekcja {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        .karta {
+            background: #1b1d25;
+            border: 1px solid #30323e;
+            border-radius: 14px;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .zdjecie-karty {
+            width: 100%;
+            height: 190px;
+            object-fit: contain;
+            background: #15161d;
+        }
+
+        .informacje {
+            padding: 15px;
+            overflow-wrap: anywhere;
+        }
+
+        .informacje h3 {
+            margin: 0 0 10px;
+        }
+
+        .informacje p {
+            margin: 8px 0;
+            color: #c6c8d2;
+            font-size: 14px;
+        }
+
+        .pustka {
+            grid-column: 1 / -1;
+            padding: 50px 20px;
+            text-align: center;
+            background: #1b1d25;
+            border: 1px dashed #383b49;
+            border-radius: 14px;
+            color: #a6a8b6;
+        }
+
+        #ekranDodawania {
+            display: none;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        .formularz {
+            padding: 25px;
+            background: #1b1d25;
+            border: 1px solid #30323e;
+            border-radius: 16px;
+        }
+
+        .formularz h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 17px;
+            margin-bottom: 7px;
+            color: #c6c8d2;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #383b49;
+            border-radius: 9px;
+            background: #111219;
+            color: white;
+            font-size: 15px;
+        }
+
+        .przyciski-formularza {
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .przyciski-formularza button {
+            flex: 1;
+        }
+
+        .anuluj {
+            background: #383b49;
+        }
+
+        .anuluj:hover {
+            background: #484b59;
+        }
+
+        #komunikat {
+            color: #ff9999;
+            font-size: 14px;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .statystyki {
+                grid-template-columns: 1fr;
+            }
+
+            #kolekcja {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .zdjecie-karty {
+                height: 135px;
+            }
+
+            .informacje {
+                padding: 10px;
+            }
+
+            .przycisk {
+                padding: 11px 13px;
+            }
+
+            
+        }
+        
+    </style>
+</head>
+<body>
+
+<a href="index.html" style=" text-decoration: none;  color: white; font-size: x-large;  position: relative; z-index: 1; display: inline-block;">Dom</a>
+
+    <div id="portfel">Stan konta: 0 zł</div>
+    <header>
+        <h1>Moja kolekcja</h1>
+        <button class="przycisk" id="przyciskPlus">+ Dodaj</button>
+    </header>
+
+    <main id="ekranKolekcji">
+
+        <section class="statystyki">
+            <div class="statystyka">
+                <p>Liczba przedmiotów</p>
+                <h2 id="liczbaPrzedmiotow">0</h2>
+            </div>
+
+            <div class="statystyka">
+                <p>Wartość zakupu</p>
+                <h2 id="wartoscZakupu">0 zł</h2>
+            </div>
+        </section>
+
+        <section id="kolekcja"></section>
+
+    </main>
+
+    <main id="ekranDodawania">
+
+        <form class="formularz" id="formularz">
+
+            <h2>Dodaj przedmiot</h2>
+
+            <label for="zdjecie">Zdjęcie</label>
+            <input type="file" id="zdjecie" accept="image/*" required>
+
+            <label for="nazwa">Nazwa przedmiotu</label>
+            <input type="text" id="nazwa" maxlength="100"
+                placeholder="Np. Messi Gold" required>
+
+            <label for="nazwaKolekcji">Kolekcja</label>
+            <input type="text" id="nazwaKolekcji" maxlength="100"
+                placeholder="Np. Piłkarskie legendy" required>
+
+            <label for="limit">Limit</label>
+            <input type="number" id="limit" min="1" step="1"
+                placeholder="Np. 99" required>
+
+            <label for="auto">Auto</label>
+            <select id="auto">
+                <option value="nie">Nie</option>
+                <option value="tak">Tak</option>
+            </select>
+
+            <label for="cena">Cena zakupu (zł)</label>
+            <input type="number" id="cena" min="0" step="1"
+                placeholder="Np. 5000" required>
+
+            <label for="ocena">Ocena ER (0–10)</label>
+            <input type="number" id="ocena" min="0" max="10" step="1"
+                placeholder="Np. 9" required>
+
+            <p id="komunikat"></p>
+
+            <div class="przyciski-formularza">
+                <button type="submit" class="przycisk">Zapisz</button>
+                <button type="button" class="przycisk anuluj"
+                    id="przyciskAnuluj">Anuluj</button>
+            </div>
+
+        </form>
+
+    </main>
+
+    <script>
+        let pieniadze = 0;
+
+    function wczytajPortfel() {
+        let zapisanePieniadze = localStorage.getItem("cartymoney");
+        if (zapisanePieniadze !== null) {
+            pieniadze = parseInt(zapisanePieniadze);
+        } else {
+            pieniadze = 0;
+            localStorage.setItem("cartymoney", "0");
+        }
+        zaktualizujWidokPortfela();
+    }
+            const przyciskPlus = document.getElementById("przyciskPlus");
+        const przyciskAnuluj = document.getElementById("przyciskAnuluj");
+        const ekranKolekcji = document.getElementById("ekranKolekcji");
+        const ekranDodawania = document.getElementById("ekranDodawania");
+        const formularz = document.getElementById("formularz");
+        const kolekcja = document.getElementById("kolekcja");
+        const komunikat = document.getElementById("komunikat");
+
+        let przedmioty = [];
+
+        try {
+            przedmioty = JSON.parse(
+                localStorage.getItem("erixisKolekcja") || "[]"
+            );
+
+            if (!Array.isArray(przedmioty)) {
+                przedmioty = [];
+            }
+        } catch {
+            przedmioty = [];
+        }
+        function zaktualizujWidokPortfela() {
+            document.getElementById("portfel").innerText = pieniadze + " zł";
+        }
+        function pokazKolekcje() {
+            ekranKolekcji.style.display = "block";
+            ekranDodawania.style.display = "none";
+            przyciskPlus.style.display = "block";
+        }
+
+        function pokazFormularz() {
+            ekranKolekcji.style.display = "none";
+            ekranDodawania.style.display = "block";
+            przyciskPlus.style.display = "none";
+            komunikat.textContent = "";
+        }
+
+        function zapiszDane() {
+            try {
+                localStorage.setItem(
+                    "erixisKolekcja",
+                    JSON.stringify(przedmioty)
+                );
+
+                return true;
+            } catch {
+                komunikat.textContent =
+                    "Brak miejsca na zapis. Spróbuj mniejszego zdjęcia.";
+
+                return false;
+            }
+        }
+
+        function formatujCene(cena) {
+            return cena.toLocaleString("pl-PL") + " zł";
+        }
+
+        function wyswietlKolekcje() {
+            wczytajPortfel();
+            kolekcja.replaceChildren();
+            zaktualizujWidokPortfela();
+            document.getElementById("liczbaPrzedmiotow")
+                .textContent = przedmioty.length;
+
+            const wartosc = przedmioty.reduce(
+                (suma, przedmiot) => suma + przedmiot.cena,
+                0
+            );
+
+            document.getElementById("wartoscZakupu")
+                .textContent = formatujCene(wartosc);
+
+            if (przedmioty.length === 0) {
+                const pustka = document.createElement("div");
+                pustka.className = "pustka";
+                pustka.textContent =
+                    "Twoja kolekcja jest pusta. Kliknij + Dodaj, aby zacząć!";
+                kolekcja.appendChild(pustka);
+                return;
+            }
+
+            przedmioty.forEach(function(przedmiot) {
+                const karta = document.createElement("article");
+                karta.className = "karta";
+
+                const zdjecie = document.createElement("img");
+                zdjecie.className = "zdjecie-karty";
+                zdjecie.src = przedmiot.zdjecie;
+                zdjecie.alt = przedmiot.nazwa;
+
+                const informacje = document.createElement("div");
+                informacje.className = "informacje";
+
+                const nazwa = document.createElement("h3");
+                nazwa.textContent = przedmiot.nazwa;
+
+                informacje.appendChild(nazwa);
+
+                const pola = [
+                    "Kolekcja: " + przedmiot.kolekcja,
+                    "Limit: " + przedmiot.limit,
+                    "Auto: " + (przedmiot.auto === "tak" ? "Tak" : "Nie"),
+                    "Zakup: " + formatujCene(przedmiot.cena),
+                    "Ocena ER: " + przedmiot.ocena + "/10"
+                ];
+
+                pola.forEach(function(tekst) {
+                    const p = document.createElement("p");
+                    p.textContent = tekst;
+                    informacje.appendChild(p);
+                });
+                const przyciskSprzedaj = document.createElement("button");
+
+                przyciskSprzedaj.className = "przycisk";
+                przyciskSprzedaj.textContent = "Sprzedaj";
+
+                przyciskSprzedaj.addEventListener("click", function() {
+                    sprzedajPrzedmiot(przedmiot.id);
+                });
+
+                informacje.appendChild(przyciskSprzedaj);
+
+                karta.appendChild(zdjecie);
+                karta.appendChild(informacje);
+                kolekcja.appendChild(karta);
+            });
+        }
+
+        function sprzedajPrzedmiot(id) {
+    const przedmiot = przedmioty.find(function(item) {
+        return item.id === id;
+    });
+    
+    if (!przedmiot) {
+        return;
+    }
+
+    // Pobieramy cenę jako czystą liczbę
+    const kwota = Number(przedmiot.cena) || 0;
+
+    const starePieniadze = Number(
+        localStorage.getItem("cartymoney") || "0"
+    );
+
+    if (
+        !Number.isSafeInteger(starePieniadze) ||
+        starePieniadze < 0 ||
+        !Number.isSafeInteger(starePieniadze + kwota)
+    ) {
+        alert("Nie udało się odczytać salda lub kwota jest za duża.");
+        return;
+    }
+
+    const indeks = przedmioty.findIndex(function(item) {
+        return item.id === id;
+    });
+
+    if (indeks === -1) {
+        return;
+    }
+
+    const sprzedanyPrzedmiot = przedmioty.splice(indeks, 1)[0];
+
+    if (!zapiszDane()) {
+        przedmioty.splice(indeks, 0, sprzedanyPrzedmiot);
+        return;
+    }
+
+    try {
+        const nowaSuma = starePieniadze + kwota;
+        localStorage.setItem("cartymoney", String(nowaSuma));
+        
+        // Aktualizujemy też zmienną globalną, żeby portfel od razu pokazał nową kwotę
+        pieniadze = nowaSuma; 
+    } catch {
+        przedmioty.splice(indeks, 0, sprzedanyPrzedmiot);
+        zapiszDane();
+
+        alert("Nie udało się zapisać pieniędzy.");
+        return;
+    }
+
+    wyswietlKolekcje();
+
+    alert(
+        "Sprzedano: " + przedmiot.nazwa +
+        "\nZarobiono: " + kwota.toLocaleString("pl-PL") + " zł" +
+        "\nNowe saldo: " +
+        (starePieniadze + kwota).toLocaleString("pl-PL") + " zł"
+    );
+}
+
+        function zmienZdjecieNaDane(plik) {
+            return new Promise(function(resolve, reject) {
+                const czytnik = new FileReader();
+
+                czytnik.onload = function() {
+                    const obraz = new Image();
+
+                    obraz.onload = function() {
+                        const maksymalnyRozmiar = 600;
+                        const skala = Math.min(
+                            1,
+                            maksymalnyRozmiar / Math.max(
+                                obraz.width,
+                                obraz.height
+                            )
+                        );
+
+                        const canvas = document.createElement("canvas");
+
+                        canvas.width = Math.round(obraz.width * skala);
+                        canvas.height = Math.round(obraz.height * skala);
+
+                        const kontekst = canvas.getContext("2d");
+
+                        kontekst.drawImage(
+                            obraz,
+                            0,
+                            0,
+                            canvas.width,
+                            canvas.height
+                        );
+
+                        resolve(
+                            canvas.toDataURL("image/jpeg", 0.75)
+                        );
+                    };
+
+                    obraz.onerror = reject;
+                    obraz.src = czytnik.result;
+                };
+
+                czytnik.onerror = reject;
+                czytnik.readAsDataURL(plik);
+            });
+        }
+
+        przyciskPlus.addEventListener("click", pokazFormularz);
+
+        przyciskAnuluj.addEventListener("click", function() {
+            formularz.reset();
+            pokazKolekcje();
+        });
+
+        formularz.addEventListener("submit", async function(event) {
+            event.preventDefault();
+            komunikat.textContent = "";
+
+            const plik = document.getElementById("zdjecie").files[0];
+            const nazwa = document.getElementById("nazwa").value.trim();
+            const nazwaKolekcji =
+                document.getElementById("nazwaKolekcji").value.trim();
+            const limit = Number(document.getElementById("limit").value);
+            const auto = document.getElementById("auto").value;
+            const cena = Number(document.getElementById("cena").value);
+            const ocena = Number(document.getElementById("ocena").value);
+
+            if (
+                !plik ||
+                !plik.type.startsWith("image/") ||
+                !nazwa ||
+                !nazwaKolekcji ||
+                !Number.isSafeInteger(limit) ||
+                limit < 1 ||
+                !Number.isSafeInteger(cena) ||
+                cena < 0 ||
+                !Number.isInteger(ocena) ||
+                ocena < 0 ||
+                ocena > 10
+            ) {
+                komunikat.textContent =
+                    "Uzupełnij poprawnie wszystkie pola.";
+                return;
+            }
+
+            if (plik.size > 15 * 1024 * 1024) {
+                komunikat.textContent =
+                    "Zdjęcie jest za duże. Maksymalny rozmiar to 15 MB.";
+                return;
+            }
+
+            const przyciskZapisz =
+                formularz.querySelector('button[type="submit"]');
+
+            przyciskZapisz.disabled = true;
+            przyciskZapisz.textContent = "Zapisywanie...";
+
+            try {
+                const zdjecie = await zmienZdjecieNaDane(plik);
+
+                const przedmiot = {
+                    id: crypto.randomUUID(),
+                    zdjecie: zdjecie,
+                    nazwa: nazwa,
+                    kolekcja: nazwaKolekcji,
+                    limit: limit,
+                    auto: auto,
+                    cena: cena,
+                    ocena: ocena
+                };
+
+                przedmioty.push(przedmiot);
+
+                if (!zapiszDane()) {
+                    przedmioty.pop();
+                    return;
+                }
+
+                formularz.reset();
+                wyswietlKolekcje();
+                pokazKolekcje();
+            } catch {
+                komunikat.textContent =
+                    "Nie udało się odczytać zdjęcia lub zapisać danych.";
+            } finally {
+                przyciskZapisz.disabled = false;
+                przyciskZapisz.textContent = "Zapisz";
+            }
+        });
+
+        wyswietlKolekcje();
+    </script>
+
+</body>
+</html>
